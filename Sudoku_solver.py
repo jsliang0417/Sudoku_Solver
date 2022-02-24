@@ -1,39 +1,6 @@
 from AC3 import Sudoku
-from AC3 import AC3, AC3b, AC4
-from AC3 import backtracking_search, mrv, forward_checking
-import time
+from AC3 import *
 import argparse
-
-easy1 = '..3.2.6..9..3.5..1..18.64....81.29..7.......8..67.82....26.95..8..2.3..9..5.1.3..'
-harder1 = '4173698.5.3..........7......2.....6.....8.4......1.......6.3.7.5..2.....1.4......'
-test_case_1 = '5346789..672195348198342567859761423426853791713924856961537284287419635345286179'
-
-t4 = '.5..7...1876.219.3....35.......4361..4...9..2.12.5...4.89.64........7...167..254.'
-
-
-def ac3_algo(input):
-    solution = Sudoku(input)
-    print("Sudoku to be solved:")
-    solution.display(solution.infer_assignment())
-    print("------------------------------")
-    start = time.time()
-    AC3(solution)
-    end = start - time.time()
-    solution.display(solution.infer_assignment())
-
-
-def backtracking_algo(input):
-    solution = Sudoku(input)
-    print("Sudoku to be solved:")
-    solution.display(solution.infer_assignment())
-    print("------------------------------")
-    start = time.time()
-    backtracking_search(solution, select_unassigned_variable=mrv, inference=forward_checking)
-    end = start - time.time()
-    solution.display(solution.infer_assignment())
-    
-    
-
 
 #parse argument
 parser = argparse.ArgumentParser()
@@ -41,12 +8,56 @@ parser.add_argument("--method", help="ac3 or backtracking+forward checking")
 parser.add_argument("--input_file", help="input your test file for this argument")
 args = parser.parse_args()
 
+
+
+def sudoku_quantity():
+    file = open(args.input_file, 'r')
+    nonempty_lines = [line.strip("\n") for line in file if line != "\n"]
+    line_count = len(nonempty_lines)
+    file.close()
+
+    print(line_count)
+    return line_count
+
+
+def fetch_unsolved_sudoku():
+    unsolved_list = [line.rstrip() for line in open('test.txt', 'r')]
+    return unsolved_list
+
+
+
+def ac3_algo(input):
+    solution = Sudoku(input)
+    print("Sudoku to be solved with AC3:")
+    solution.display(solution.infer_assignment())
+    AC3(solution)
+    print("--------------------------------------------")
+    solution.display(solution.infer_assignment())
+
+    
+    length = [len(value) for key, value in solution.return_curr_domains().items()]
+    if length[0] >= 1:
+        print("AC3 failed to solve, trying Backtracking: ")
+        backtracking_algo(input)
+
+
+def backtracking_algo(input):
+    solution = Sudoku(input)
+    print("Sudoku to be solved with backtracking:")
+    solution.display(solution.infer_assignment())
+    print("--------------------------------------------")
+    backtracking_search(solution, select_unassigned_variable=mrv, inference=forward_checking)
+    solution.display(solution.infer_assignment())
+    
+
 if args.method == "ac3":
-    if args.input_file == "input.txt":
+    if args.input_file == "test.txt":
         print("Solving input.txt with AC3 algorithm.")
-        ac3_algo(t4)
-elif args.method == "backtracking":
-    if args.input_file == "input.txt":
-        print("Solving input.txt with Backtracking algorithm.")
-        backtracking_algo(t4)
+        for i in range(sudoku_quantity()):
+            ac3_algo(fetch_unsolved_sudoku()[i])
         
+elif args.method == "backtracking":
+    if args.input_file == "test.txt":
+        print("Solving input.txt with Backtracking algorithm.")
+        for i in range(sudoku_quantity()):
+            backtracking_algo(fetch_unsolved_sudoku()[i])
