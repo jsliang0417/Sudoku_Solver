@@ -38,5 +38,5 @@ After converting, you will need to copy and paste the convered version of unsolv
 
 # Acknowledgements
 
-Thank you for the repo [Aima-python: csp.py](https://github.com/aimacode/aima-python/blob/master/csp.py).   
+Thank you for the repo [Aima-python: csp.py](https://github.com/aimacode/aima-python/blob/master/csp.py)   
 Code reference cited: [Aima-python: csp.py](https://github.com/aimacode/aima-python/blob/master/csp.py)
